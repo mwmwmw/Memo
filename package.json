@@ -1,0 +1,19 @@
+{
+  "name": "memo",
+  "version": "1.0.0",
+  "description": "The smallest event system imaginable.",
+  "main": "Memo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mwmwmw/Memo.git"
+  },
+  "author": "Matthew Willox",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mwmwmw/Memo/issues"
+  },
+  "homepage": "https://github.com/mwmwmw/Memo#readme"
+}
