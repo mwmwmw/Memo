@@ -1,48 +1,39 @@
+let listeners = {};
+
 export default class Memo {
-	constructor() {
-		this.listeners = {};
-	}
-	on(event, handler) {
-		if (this.listeners[event] === undefined) {
-			this.listeners[event] = [handler];
+	static on(event, handler, eventListeners = listeners) {
+		if (eventListeners[event] === undefined) {
+			eventListeners[event] = [handler];
 		} else {
-			this.listeners[event].push(handler);
+			eventListeners[event].push(handler);
 		}
-		return handler;
-	};
-	off(event, handler = null) {
-		if (this.listeners[event]) {
-			if (handler == null) {
-				for (let i = this.listeners[event].length - 1; i >= 0; i--) {
-					if (this.listeners[event].length === 1) {
-						delete this.listeners[event];
-						return true;
-					} else {
-						this.listeners[event].splice(i, 1);
-						return true;
-					}
-				}
-			} else {
-				for (let i = 0; i < this.listeners[event].length; i++) {
-					if (this.listeners[event][i] == handler) {
-						this.listeners[event].splice(i, 1);
-						if(this.listeners[event].length === 0) {
-							delete this.listeners[event];
-						}
-						return true;
-					}
+	}
+
+	static off(event, handler, eventListeners = listeners) {
+		if (eventListeners[event]) {
+			for (let i = eventListeners[event].length - 1; i >= 0; i--) {
+				if (eventListeners[event].length === 1) {
+					delete eventListeners[event];
+				} else {
+					eventListeners[event].splice(i, 1);
+					break;
 				}
 			}
 		}
-		return false;
 	}
 
-	trigger(event, data) {
-		if (this.listeners[event]) {
-			for (let i = this.listeners[event].length - 1; i >= 0; i--) {
-				if (this.listeners[event] !== undefined) {
-					if (typeof this.listeners[event][i] === "function" && this.listeners[event][i]) {
-						this.listeners[event][i](data);
+	static trigger(event) {
+		var data = new Array(...arguments);
+		data.splice(0, 1);
+		Memo.send(event, listeners, data)
+	}
+
+	static send(event, eventListeners = listeners, data) {
+		if (eventListeners[event]) {
+			for (let i = eventListeners[event].length - 1; i >= 0; i--) {
+				if (eventListeners[event] !== undefined) {
+					if (typeof eventListeners[event][i] === "function" && eventListeners[event][i]) {
+						eventListeners[event][i](...data);
 					} else {
 						throw "Event handler is not a function.";
 					}
@@ -50,4 +41,33 @@ export default class Memo {
 			}
 		}
 	}
+
+	static unbindAll(eventListeners = listeners) {
+		for (const event in eventListeners) {
+			delete eventListeners[event];
+		}
+		return true;
+	};
+
+	constructor() {
+		this.listeners = {};
+	}
+
+	on(event, handler) {
+		Memo.on(event, handler, this.listeners);
+	}
+
+	off(event, handler) {
+		Memo.off(event, handler, this.listeners);
+	}
+
+	trigger(event) {
+		var data = new Array(...arguments);
+		data.splice(0, 1);
+		Memo.send(event, this.listeners, data);
+	}
+
+	unbindAll() {
+		Memo.on(this.listeners);
+	};
 }
