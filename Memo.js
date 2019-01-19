@@ -68,6 +68,6 @@ export default class Memo {
 	}
 
 	unbindAll() {
-		Memo.on(this.listeners);
+		Memo.unbindAll(this.listeners);
 	};
 }
